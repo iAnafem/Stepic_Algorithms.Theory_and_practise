@@ -2,35 +2,55 @@ import random
 
 
 def get_separator(_array):
-    separator = random.choice(_array)
-    sep_index = _array.index(separator)
-    return separator, sep_index
+    return random.choice(_array)
 
 
-def quick_sort(_array, l, r):
-    sep, sep_index = get_separator(_array)
-    print(sep)
-    _array[0], _array[sep_index] = _array[sep_index], _array[0]
-    print(_array)
-    j = 1
-    print(l, r)
-    for i in range(l + 1, r + 1):
-        if _array[i] < sep:
+def quick_sort(_array, fst, lst):
+    if fst >= lst:
+        return
+
+    i, j = fst, lst
+    pivot = get_separator(_array)
+
+    while i <= j:
+        while _array[i] < pivot:
+            i += 1
+        while _array[j] > pivot:
+            j -= 1
+        if i <= j:
             _array[i], _array[j] = _array[j], _array[i]
-            j += 1
-            print(_array)
-        elif _array[i] > sep:
-            print(_array)
-            continue
-        elif _array[i] == sep:
-            continue
+            i, j = i + 1, j - 1
+    quick_sort(_array, fst, j)
+    quick_sort(_array, i, lst)
 
-    _array[0], _array[j - 1] = _array[j - 1], _array[0]
-    return _array, j
+
+def binary_search(_array, point):
+    left = 0
+    right = len(_array) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if _array[mid] == point:
+            while _array[mid + 1] == point:
+                mid += 1
+            return mid + 1
+        elif _array[mid] > point:
+            right = mid - 1
+        elif _array[mid] < point:
+            if _array[mid + 1] > point:
+                return mid + 1
+            left = mid + 1
 
 
 def solution(_starts, _ends, _points):
-    return []
+    quick_sort(_starts, 0, len(_starts) - 1)
+    quick_sort(_ends, 0, len(_ends) - 1)
+    result = []
+    for item in _points:
+        count1 = binary_search(_starts, item)
+        count2 = binary_search(_ends, item)
+
+        print(count1, count2)
+
 
 
 def main():
@@ -42,8 +62,9 @@ def main():
         starts.append(segments[0])
         ends.append(segments[1])
     points = list(map(int, input().split(" ")))
-    #print(" ".join([str(count) for count in solution(starts, ends, points)]))
-    print(quick_sort(starts, 0, len(starts) - 1))
+    print(" ".join([str(count) for count in solution(starts, ends, points)]))
+
+
 
 
 if __name__ == "__main__":
